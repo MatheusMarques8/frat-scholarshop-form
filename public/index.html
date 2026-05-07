@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brother Spotlight Form</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Scholarship Chair Intake</p>
+        <h1 id="page-title">Brother<br>Spotlight</h1>
+        <p class="subtitle">Share your next internship, research role, or job so the chapter can spotlight it.</p>
+      </div>
+      <div class="hero-meter" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <form id="spotlight-form" novalidate>
+        <div class="step active" data-step="1">
+          <div class="step-heading">
+            <p class="step-count">Step 1 of 3</p>
+            <h2>What are you submitting?</h2>
+          </div>
+
+          <div class="type-grid" role="radiogroup" aria-label="Opportunity type">
+            <button class="type-card active" type="button" data-type="internship" aria-pressed="true">
+              <span class="type-icon">IT</span>
+              <span class="type-title">Internship</span>
+              <span class="type-text">Summer programs, co-ops, analyst roles, and industry experience.</span>
+            </button>
+            <button class="type-card" type="button" data-type="research" aria-pressed="false">
+              <span class="type-icon">RS</span>
+              <span class="type-title">Research</span>
+              <span class="type-text">Labs, fellowships, assistantships, publications, and projects.</span>
+            </button>
+            <button class="type-card" type="button" data-type="job" aria-pressed="false">
+              <span class="type-icon">JB</span>
+              <span class="type-title">Job</span>
+              <span class="type-text">Full-time, part-time, return offers, and post-grad positions.</span>
+            </button>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="button" data-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="step-heading">
+            <p class="step-count">Step 2 of 3</p>
+            <h2>Tell us the details</h2>
+          </div>
+
+          <div class="fields two-column">
+            <label>
+              <span>Name</span>
+              <input name="name" autocomplete="name" required placeholder="Your full name">
+            </label>
+            <label>
+              <span>Email</span>
+              <input name="email" type="email" autocomplete="email" required placeholder="you@school.edu">
+            </label>
+            <label>
+              <span id="organization-label">Company</span>
+              <input name="organization" required placeholder="Company, lab, or employer">
+            </label>
+            <label>
+              <span>Location</span>
+              <input name="location" required placeholder="City, State or remote">
+            </label>
+            <label>
+              <span>Position</span>
+              <input name="position" required placeholder="Software Engineering Intern">
+            </label>
+            <label>
+              <span>Start date</span>
+              <input name="startDate" placeholder="Summer 2026, June 3, etc.">
+            </label>
+          </div>
+
+          <label class="full">
+            <span>LinkedIn</span>
+            <input name="linkedin" type="url" placeholder="https://www.linkedin.com/in/yourname">
+          </label>
+
+          <label class="full">
+            <span>What are you looking forward to?</span>
+            <textarea name="lookingForward" required rows="5" placeholder="A sentence or two about the work, team, city, skills, or opportunity."></textarea>
+          </label>
+
+          <label class="full">
+            <span>Optional shoutout</span>
+            <input name="shoutout" placeholder="Someone who helped you, a mentor, or a quick thank you">
+          </label>
+
+          <div class="actions split">
+            <button class="secondary" type="button" data-back>Back</button>
+            <button class="primary" type="button" data-next>Continue</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="step-heading">
+            <p class="step-count">Step 3 of 3</p>
+            <h2>Add a photo</h2>
+          </div>
+
+          <label class="dropzone" for="photo">
+            <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp">
+            <span class="drop-icon">+</span>
+            <span class="drop-title">Upload an optional picture</span>
+            <span class="drop-text">A headshot, work photo, campus picture, or anything you would want posted.</span>
+          </label>
+
+          <div id="photo-preview" class="photo-preview" hidden></div>
+
+          <label class="consent">
+            <input name="allowSocial" type="checkbox" checked>
+            <span>Make a ready-to-post social caption for this submission.</span>
+          </label>
+
+          <div class="actions split">
+            <button class="secondary" type="button" data-back>Back</button>
+            <button class="primary" type="submit">Submit spotlight</button>
+          </div>
+        </div>
+      </form>
+
+      <aside class="side-panel">
+        <div class="progress">
+          <span class="progress-label">Progress</span>
+          <div class="progress-track"><span id="progress-bar"></span></div>
+        </div>
+
+        <div class="preview-card">
+          <p class="preview-kicker" id="preview-type">Internship Spotlight</p>
+          <h3 id="preview-name">Your Name</h3>
+          <p id="preview-role">Position at Organization</p>
+          <p id="preview-location">Location</p>
+        </div>
+
+        <div class="note">
+          <strong>After submit</strong>
+          <p>Saved locally.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="success" class="success" hidden>
+      <p class="eyebrow">Submitted</p>
+      <h2>Spotlight saved.</h2>
+      <p id="saved-path"></p>
+      <div class="caption-box">
+        <span>Generated caption</span>
+        <pre id="caption-output"></pre>
+      </div>
+      <button class="primary" id="new-submission" type="button">Add another</button>
+    </section>
+  </main>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

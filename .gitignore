@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+.env
+submissions/*
+!submissions/.gitkeep
+submissions-export.tar.gz
+ui-check*.png
