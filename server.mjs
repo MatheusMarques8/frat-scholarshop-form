@@ -35,7 +35,8 @@ const requiredFields = [
   "organization",
   "location",
   "position",
-  "lookingForward"
+  "lookingForward",
+  "photo"
 ];
 
 await mkdir(SUBMISSIONS_DIR, { recursive: true });
@@ -98,7 +99,7 @@ async function serveStatic(pathname, res) {
 async function handleSubmit(req, res) {
   const payload = await readJsonBody(req);
   const cleaned = cleanSubmission(payload);
-  const errors = validateSubmission(cleaned);
+  const errors = validateSubmission(cleaned, payload.photo);
 
   if (errors.length > 0) {
     sendJson(res, 400, { errors });
@@ -111,10 +112,7 @@ async function handleSubmit(req, res) {
   const folder = join(SUBMISSIONS_DIR, folderName);
   await mkdir(folder, { recursive: true });
 
-  let photoFile = "";
-  if (payload.photo?.dataUrl) {
-    photoFile = await savePhoto(payload.photo, folder, id);
-  }
+  const photoFile = await savePhoto(payload.photo, folder, id);
 
   const record = {
     id,
@@ -129,7 +127,7 @@ async function handleSubmit(req, res) {
   await writeFile(join(folder, "submission.json"), `${JSON.stringify(record, null, 2)}\n`, "utf8");
   await writeFile(join(folder, "social-caption.txt"), `${caption}\n`, "utf8");
   await writeFile(join(folder, "groupme-reply.txt"), `${shortPost}\n`, "utf8");
-  await writeFile(join(folder, "post-card.html"), makePostCard(record, caption), "utf8");
+  await writeFile(join(folder, "post-card.html"), makePostCard(record), "utf8");
   await appendCsv(record);
   await appendFile(join(SUBMISSIONS_DIR, "latest-social-posts.md"), `\n## ${record.name}\n\n${caption}\n`, "utf8");
 
@@ -185,10 +183,11 @@ function cleanSubmission(payload = {}) {
   };
 }
 
-function validateSubmission(data) {
+function validateSubmission(data, photo) {
   const errors = [];
 
   for (const field of requiredFields) {
+    if (field === "photo") continue;
     if (!data[field]) errors.push(`${field} is required.`);
   }
 
@@ -197,6 +196,7 @@ function validateSubmission(data) {
   if (data.linkedin && !/^https?:\/\/(www\.)?linkedin\.com\/.+/i.test(data.linkedin)) {
     errors.push("LinkedIn should be a full linkedin.com URL.");
   }
+  if (!isValidPhoto(photo)) errors.push("Photo is required.");
 
   return errors;
 }
@@ -213,6 +213,10 @@ async function savePhoto(photo, folder, id) {
   const photoFile = `photo-${id}.${extension}`;
   await writeFile(join(folder, photoFile), Buffer.from(match[2], "base64"));
   return photoFile;
+}
+
+function isValidPhoto(photo) {
+  return /^data:image\/(?:png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+$/.test(String(photo?.dataUrl || ""));
 }
 
 async function appendCsv(record) {
@@ -255,14 +259,20 @@ function makeShortPost(record) {
   return `${record.name} submitted a ${typeLabels[record.type].toLowerCase()} spotlight for ${record.organization}. Saved in submissions/${record.folderName}.`;
 }
 
-function makePostCard(record, caption) {
-  const safeCaption = escapeHtml(caption).replace(/\n/g, "<br>");
+function makePostCard(record) {
   const safeName = escapeHtml(record.name);
   const safeOrg = escapeHtml(record.organization);
   const safePosition = escapeHtml(record.position);
+  const safeLookingForward = escapeHtml(record.lookingForward);
+  const safeLinkedin = escapeHtml(record.linkedin || "");
+  const safeShoutout = escapeHtml(record.shoutout || "");
+  const safeStartDate = escapeHtml(record.startDate || "");
   const photoMarkup = record.photoFile
     ? `<img src="./${encodeURIComponent(record.photoFile)}" alt="${safeName} photo">`
     : `<div class="placeholder">${initials(record.name)}</div>`;
+  const startDateMarkup = safeStartDate ? `<p class="meta">Starting ${safeStartDate}</p>` : "";
+  const shoutoutMarkup = safeShoutout ? `<p class="shoutout">Shoutout: ${safeShoutout}</p>` : "";
+  const linkedinMarkup = safeLinkedin ? `<p class="linkedin">LinkedIn: ${safeLinkedin}</p>` : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -272,14 +282,18 @@ function makePostCard(record, caption) {
   <title>${safeName} Spotlight</title>
   <style>
     body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #111827; font-family: Arial, sans-serif; color: #f8fafc; }
-    .post { width: min(92vw, 720px); aspect-ratio: 4 / 5; background: linear-gradient(145deg, #0f172a 0%, #172554 45%, #7c2d12 100%); display: grid; grid-template-rows: 58% 42%; overflow: hidden; border-radius: 22px; box-shadow: 0 26px 70px rgba(0,0,0,.38); }
+    .post { width: min(92vw, 720px); aspect-ratio: 4 / 5; background: linear-gradient(145deg, #0f172a 0%, #172554 45%, #7c2d12 100%); display: grid; grid-template-rows: 56% 44%; overflow: hidden; border-radius: 22px; box-shadow: 0 26px 70px rgba(0,0,0,.38); }
     img, .placeholder { width: 100%; height: 100%; object-fit: cover; }
     .placeholder { display: grid; place-items: center; font-size: 120px; font-weight: 900; background: #f59e0b; color: #111827; }
-    .copy { padding: 34px; display: grid; align-content: center; gap: 14px; }
+    .copy { min-height: 0; padding: 28px 32px 26px; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) auto auto; gap: 8px; }
     .kicker { color: #fde68a; text-transform: uppercase; font-size: 15px; letter-spacing: 0; font-weight: 800; }
-    h1 { margin: 0; font-size: 48px; line-height: 1; }
-    h2 { margin: 0; font-size: 26px; color: #dbeafe; font-weight: 700; }
-    p { margin: 0; color: #e5e7eb; line-height: 1.45; font-size: 18px; }
+    h1 { margin: 0; font-size: clamp(34px, 7vw, 48px); line-height: .96; }
+    h2 { margin: 0; font-size: clamp(19px, 4vw, 25px); color: #dbeafe; font-weight: 700; line-height: 1.12; }
+    p { margin: 0; color: #e5e7eb; line-height: 1.32; font-size: 16px; }
+    .meta { color: #fde68a; font-weight: 700; }
+    .looking { min-height: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+    .shoutout { color: #fef3c7; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .linkedin { align-self: end; color: #bfdbfe; font-size: 13px; line-height: 1.22; overflow-wrap: anywhere; word-break: break-word; }
   </style>
 </head>
 <body>
@@ -289,7 +303,10 @@ function makePostCard(record, caption) {
       <div class="kicker">${escapeHtml(typeLabels[record.type])} Spotlight</div>
       <h1>${safeName}</h1>
       <h2>${safePosition} at ${safeOrg}</h2>
-      <p>${safeCaption}</p>
+      ${startDateMarkup}
+      <p class="looking">Looking forward to: ${safeLookingForward}</p>
+      ${shoutoutMarkup}
+      ${linkedinMarkup}
     </section>
   </article>
 </body>

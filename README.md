@@ -92,7 +92,7 @@ Inside each folder:
 - `social-caption.txt`: ready-to-send Instagram or LinkedIn caption
 - `groupme-reply.txt`: quick confirmation message
 - `post-card.html`: a simple visual post layout
-- `photo-...jpg/png/webp`: optional uploaded photo
+- `photo-...jpg/png/webp`: required uploaded photo
 
 The app also maintains:
 

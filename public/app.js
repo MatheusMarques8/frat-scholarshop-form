@@ -5,6 +5,8 @@ const progressBar = document.querySelector("#progress-bar");
 const organizationLabel = document.querySelector("#organization-label");
 const photoInput = document.querySelector("#photo");
 const photoPreview = document.querySelector("#photo-preview");
+const photoTitle = document.querySelector("#photo-title");
+const photoHelp = document.querySelector("#photo-help");
 const success = document.querySelector("#success");
 const savedPath = document.querySelector("#saved-path");
 const captionOutput = document.querySelector("#caption-output");
@@ -69,31 +71,40 @@ photoInput.addEventListener("change", async () => {
   if (!file) {
     photoPreview.hidden = true;
     photoPreview.innerHTML = "";
+    resetPhotoPrompt();
     return;
   }
 
   if (!file.type.startsWith("image/")) {
     showError("Please choose an image file.");
     photoInput.value = "";
+    clearPhotoSelection();
     return;
   }
 
   if (file.size > 7 * 1024 * 1024) {
     showError("Please keep the photo under 7 MB.");
     photoInput.value = "";
+    clearPhotoSelection();
     return;
   }
 
   const dataUrl = await readFileAsDataUrl(file);
   photo = { name: file.name, type: file.type, dataUrl };
   photoPreview.hidden = false;
-  photoPreview.innerHTML = `<img src="${dataUrl}" alt=""> ${escapeHtml(file.name)}`;
+  photoPreview.innerHTML = `<img src="${dataUrl}" alt=""> <span>${escapeHtml(file.name)}</span>`;
+  photoTitle.textContent = "Replace photo";
+  photoHelp.textContent = "Click here to choose a different picture.";
 });
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
   if (!validateDetails()) {
     setStep(2);
+    return;
+  }
+  if (!validatePhoto()) {
+    setStep(3);
     return;
   }
 
@@ -144,8 +155,7 @@ form.addEventListener("submit", async event => {
 newSubmission.addEventListener("click", () => {
   form.reset();
   photo = null;
-  photoPreview.hidden = true;
-  photoPreview.innerHTML = "";
+  clearPhotoSelection();
   document.querySelector(".form-panel").hidden = false;
   success.hidden = true;
   selectedType = "internship";
@@ -185,6 +195,16 @@ function validateDetails() {
   return true;
 }
 
+function validatePhoto() {
+  if (photo) return true;
+
+  photoInput.setCustomValidity("Please upload a photo.");
+  photoInput.reportValidity();
+  photoInput.setCustomValidity("");
+  showError("Please upload a photo before submitting.");
+  return false;
+}
+
 function updatePreview() {
   const name = field("name").value.trim() || "Your Name";
   const position = field("position").value.trim() || "Position";
@@ -203,6 +223,18 @@ function showError(message) {
   error.className = "error";
   error.textContent = message;
   form.append(error);
+}
+
+function clearPhotoSelection() {
+  photo = null;
+  photoPreview.hidden = true;
+  photoPreview.innerHTML = "";
+  resetPhotoPrompt();
+}
+
+function resetPhotoPrompt() {
+  photoTitle.textContent = "Upload a picture";
+  photoHelp.textContent = "A headshot, work photo, campus picture, or anything you would want posted.";
 }
 
 function readFileAsDataUrl(file) {

@@ -109,14 +109,14 @@
         <div class="step" data-step="3">
           <div class="step-heading">
             <p class="step-count">Step 3 of 3</p>
-            <h2>Add a photo</h2>
+            <h2>Add your photo</h2>
           </div>
 
           <label class="dropzone" for="photo">
-            <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp">
+            <input id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp" required>
             <span class="drop-icon">+</span>
-            <span class="drop-title">Upload an optional picture</span>
-            <span class="drop-text">A headshot, work photo, campus picture, or anything you would want posted.</span>
+            <span class="drop-title" id="photo-title">Upload a picture</span>
+            <span class="drop-text" id="photo-help">A headshot, work photo, campus picture, or anything you would want posted.</span>
           </label>
 
           <div id="photo-preview" class="photo-preview" hidden></div>

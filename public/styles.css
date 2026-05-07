@@ -309,14 +309,21 @@ textarea:focus {
   background: #fff;
   border: 1px solid var(--line);
   color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .photo-preview img {
   width: 84px;
   height: 84px;
   object-fit: cover;
-  vertical-align: middle;
-  margin-right: 12px;
+  flex: 0 0 auto;
+}
+
+.photo-preview span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .consent {
