@@ -285,13 +285,13 @@ function makePostCard(record) {
     .post { width: min(92vw, 720px); aspect-ratio: 4 / 5; background: linear-gradient(145deg, #0f172a 0%, #172554 45%, #7c2d12 100%); display: grid; grid-template-rows: 56% 44%; overflow: hidden; border-radius: 22px; box-shadow: 0 26px 70px rgba(0,0,0,.38); }
     img, .placeholder { width: 100%; height: 100%; object-fit: cover; }
     .placeholder { display: grid; place-items: center; font-size: 120px; font-weight: 900; background: #f59e0b; color: #111827; }
-    .copy { min-height: 0; padding: 28px 32px 26px; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) auto auto; gap: 8px; }
+    .copy { min-height: 0; padding: 28px 32px 26px; display: grid; grid-template-rows: auto auto auto auto minmax(0, 1fr) auto; align-content: start; gap: 8px; }
     .kicker { color: #fde68a; text-transform: uppercase; font-size: 15px; letter-spacing: 0; font-weight: 800; }
     h1 { margin: 0; font-size: clamp(34px, 7vw, 48px); line-height: .96; }
     h2 { margin: 0; font-size: clamp(19px, 4vw, 25px); color: #dbeafe; font-weight: 700; line-height: 1.12; }
     p { margin: 0; color: #e5e7eb; line-height: 1.32; font-size: 16px; }
     .meta { color: #fde68a; font-weight: 700; }
-    .looking { min-height: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+    .looking { min-height: 0; margin-top: 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
     .shoutout { color: #fef3c7; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .linkedin { align-self: end; color: #bfdbfe; font-size: 13px; line-height: 1.22; overflow-wrap: anywhere; word-break: break-word; }
   </style>
