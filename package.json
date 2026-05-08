@@ -7,6 +7,7 @@
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
     "public": "node scripts/start-public.mjs",
-    "export": "tar -czf submissions-export.tar.gz submissions"
+    "export": "tar -czf submissions-export.tar.gz submissions",
+    "clean-submissions": "node scripts/clean-submissions.mjs"
   }
 }

@@ -51,6 +51,15 @@ submissions-export.tar.gz
 
 Download that file from the Codespaces file explorer. It contains the `submissions` folder with each person-named subfolder, photos, captions, and CSV.
 
+If you need to clean existing submissions after a design or LinkedIn formatting update, run:
+
+```bash
+npm run clean-submissions
+npm run export
+```
+
+That rewrites the saved captions, post cards, JSON files, and CSV before creating a fresh export.
+
 ## Public GroupMe Link With ngrok
 
 This app is set up for an ngrok tunnel. On ngrok's free plan, your account gets one assigned dev domain, which is the closest no-domain option for a repeatable public URL.
